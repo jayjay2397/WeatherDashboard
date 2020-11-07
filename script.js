@@ -59,3 +59,70 @@ function renderSearchHistory(cityName) {
     }
 }
 
+// Creating Function to get weather data
+function renderWeatherData(cityName, cityTemp, cityHumidity, cityWindSpeed, cityWeatherIcon, uvVal) {
+    cityNameEl.text(cityName)
+    currentDateEl.text(`(${today})`)
+    tempEl.text(`Temperature: ${cityTemp} °F`);
+    humidityEl.text(`Humidity: ${cityHumidity}%`);
+    windSpeedEl.text(`Wind Speed: ${cityWindSpeed} MPH`);
+    uvIndexEl.text(`UV Index: ${uvVal}`);
+    weatherIconEl.attr("src", cityWeatherIcon);
+}
+// Creating Function to get weather data in desired or specefic citywith API
+function getWeather(desiredCity) {
+    let queryUrl = `https://api.openweathermap.org/data/2.5/weather?q=${desiredCity}&APPID=${apiKey}&units=imperial`;
+    $.ajax({
+        url: queryUrl,
+        method: "GET"
+    })
+    .then(function(weatherData) {
+        let cityObj = {
+            cityName: weatherData.name,
+            cityTemp: weatherData.main.temp,
+            cityHumidity: weatherData.main.humidity,
+            cityWindSpeed: weatherData.wind.speed,
+            cityUVIndex: weatherData.coord,
+            cityWeatherIconName: weatherData.weather[0].icon
+        }
+    let queryUrl = `https://api.openweathermap.org/data/2.5/uvi?lat=${cityObj.cityUVIndex.lat}&lon=${cityObj.cityUVIndex.lon}&APPID=${apiKey}&units=imperial`
+    $.ajax({
+        url: queryUrl,
+        method: 'GET'
+    })
+    .then(function(uvData) {
+        if (JSON.parse(localStorage.getItem("searchHistory")) == null) {
+            let searchHistoryArr = [];
+            // Using if and else to prevent the user from adding a city more then once ot the searchHistory
+            if (searchHistoryArr.indexOf(cityObj.cityName) === -1) {
+                searchHistoryArr.push(cityObj.cityName);
+                // store our array of searches and save in local storage
+                localStorage.setItem("searchHistory", JSON.stringify(searchHistoryArr));
+                let renderedWeatherIcon = `https:///openweathermap.org/img/w/${cityObj.cityWeatherIconName}.png`;
+                renderWeatherData(cityObj.cityName, cityObj.cityTemp, cityObj.cityHumidity, cityObj.cityWindSpeed, renderedWeatherIcon, uvData.value);
+                renderSearchHistory(cityObj.cityName);
+            }else{
+                console.log("City already in searchHistory. Not adding to history list")
+                let renderedWeatherIcon = `https:///openweathermap.org/img/w/${cityObj.cityWeatherIconName}.png`;
+                renderWeatherData(cityObj.cityName, cityObj.cityTemp, cityObj.cityHumidity, cityObj.cityWindSpeed, renderedWeatherIcon, uvData.value);
+            }
+ 
+        }else{
+            let searchHistoryArr = JSON.parse(localStorage.getItem("searchHistory"));
+            // Using if and else to prevent the user from adding a city more then once ot the searchHistory
+            if (searchHistoryArr.indexOf(cityObj.cityName) === -1) {
+                searchHistoryArr.push(cityObj.cityName);
+                // store our array of searches and save in local s
+                localStorage.setItem("searchHistory", JSON.stringify(searchHistoryArr));
+                let renderedWeatherIcon = `https:///openweathermap.org/img/w/${cityObj.cityWeatherIconName}.png`;
+                renderWeatherData(cityObj.cityName, cityObj.cityTemp, cityObj.cityHumidity, cityObj.cityWindSpeed, renderedWeatherIcon, uvData.value);
+                renderSearchHistory(cityObj.cityName);
+            }else{
+                console.log("City already in searchHistory. Not adding to history list")
+                let renderedWeatherIcon = `https:///openweathermap.org/img/w/${cityObj.cityWeatherIconName}.png`;
+                renderWeatherData(cityObj.cityName, cityObj.cityTemp, cityObj.cityHumidity, cityObj.cityWindSpeed, renderedWeatherIcon, uvData.value);
+            }
+        }
+    })
+        
+

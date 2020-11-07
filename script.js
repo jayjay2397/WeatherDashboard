@@ -47,3 +47,15 @@ $(document).on("click", ".historyEntry", function() {
     getWeather(thisElement.text());
 })
 
+//Creating a for loop for the search history
+function renderSearchHistory(cityName) {
+    searchHistoryEl.empty();
+    let searchHistoryArr = JSON.parse(localStorage.getItem("searchHistory"));
+    for (let i = 0; i < searchHistoryArr.length; i++) {
+        // Putting a newListItem in loop that way the text of the li element changes, so i dont have to create an array in the HTML.
+        let newListItem = $("<li>").attr("class", "historyEntry");
+        newListItem.text(searchHistoryArr[i]);
+        searchHistoryEl.prepend(newListItem);
+    }
+}
+

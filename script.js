@@ -22,3 +22,28 @@ let mm = String(today.getMonth() + 1).padStart(2, '0');
 let yyyy = today.getFullYear();
 var today = mm + '/' + dd + '/' + yyyy;
 
+// Adding a local storage for search history
+if (JSON.parse(localStorage.getItem("searchHistory")) === null) {
+    console.log("searchHistory not found")
+}else{
+    console.log("searchHistory loaded into searchHistoryArr");
+    renderSearchHistory();
+}
+
+// Adding OnClick Functions for the Search Button
+searchBtn.on("click", function(e) {
+    e.preventDefault();
+    if (searchInput.val() === "") {
+        alert("You must enter a city");
+        return;
+    }
+    console.log("clicked button")
+    getWeather(searchInput.val());
+});
+
+$(document).on("click", ".historyEntry", function() {
+    console.log("clicked history item")
+    let thisElement = $(this);
+    getWeather(thisElement.text());
+})
+
